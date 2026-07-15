@@ -247,17 +247,17 @@ function loadMessages(scrollBottom=false){
 
 function drawMessages(messages){
 
-    const area=document.getElementById("messages");
+    const area = document.getElementById("messages");
 
-    area.innerHTML="";
+    area.innerHTML = "";
 
-    messages.forEach(msg=>{
+    messages.forEach(msg => {
 
-        const box=document.createElement("div");
+        const box = document.createElement("div");
 
-        box.className="message";
+        box.className = "message";
 
-        if(msg.userId===userId){
+        if(msg.userId === userId){
 
             box.classList.add("me");
 
@@ -267,9 +267,33 @@ function drawMessages(messages){
 
         }
 
-        box.innerHTML=`
+        let menu = "";
 
-<div class="nickname">${escapeHtml(msg.nickname)}</div>
+        if(msg.userId === userId){
+
+            menu = `
+                <div class="messageMenu">
+                    <button onclick="editMessage('${msg.messageId}')">
+                        ✏️
+                    </button>
+
+                    <button onclick="deleteMessage('${msg.messageId}')">
+                        🗑️
+                    </button>
+                </div>
+            `;
+
+        }
+
+        box.innerHTML = `
+
+<div class="nickname">
+
+${escapeHtml(msg.nickname)}
+
+</div>
+
+${menu}
 
 <div class="bubble">
 
@@ -290,7 +314,6 @@ ${formatTime(msg.time)}
     });
 
 }
-
 // ---------------------
 // HTMLエスケープ
 // ---------------------
