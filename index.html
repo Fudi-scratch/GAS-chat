@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GAS Chat</title>
+
+  <?!= HtmlService.createHtmlOutputFromFile("style").getContent(); ?>
+</head>
+
+<body>
+
+  <!-- 初回ニックネーム設定 -->
+  <div id="nicknameModal" class="modal">
+    <div class="modalBox">
+      <h2>ニックネーム</h2>
+
+      <p>最初にニックネームを決めてください。</p>
+
+      <input
+        id="nicknameInput"
+        type="text"
+        maxlength="20"
+        placeholder="ニックネーム">
+
+      <button id="saveNicknameButton">
+        はじめる
+      </button>
+    </div>
+  </div>
+
+  <!-- 全体 -->
+  <div id="app">
+
+    <!-- ヘッダー -->
+    <header>
+
+      <div class="title">
+        💬 GAS Chat
+      </div>
+
+      <button id="changeNicknameButton">
+        名前変更
+      </button>
+
+    </header>
+
+    <!-- メッセージ一覧 -->
+    <main id="chatArea">
+
+      <div id="messages">
+
+      </div>
+
+    </main>
+
+    <!-- 入力欄 -->
+    <footer>
+
+      <div class="counter">
+
+        <span id="charCount">
+          0
+        </span>
+
+        /100
+
+      </div>
+
+      <div class="inputArea">
+
+        <textarea
+          id="messageInput"
+          maxlength="100"
+          placeholder="メッセージを入力..."
+          rows="2"></textarea>
+
+        <button id="sendButton">
+          送信
+        </button>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+  <?!= HtmlService.createHtmlOutputFromFile("script").getContent(); ?>
+
+</body>
+
+</html>
