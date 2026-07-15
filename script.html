@@ -369,3 +369,71 @@ setInterval(function(){
 loadMessages(true);
 
 </script>
+// =======================
+// 編集
+// =======================
+
+function editMessage(messageId){
+
+    const text = prompt("新しいメッセージを入力してください");
+
+    if(text === null) return;
+
+    if(text.trim() === "") return;
+
+    if(text.length > 100){
+
+        alert("100文字までです");
+
+        return;
+
+    }
+
+    google.script.run
+
+    .withSuccessHandler(function(){
+
+        loadMessages();
+
+    })
+
+    .editMessage(
+
+        messageId,
+
+        userId,
+
+        text
+
+    );
+
+}
+// =======================
+// 削除
+// =======================
+
+function deleteMessage(messageId){
+
+    if(!confirm("このメッセージを削除しますか？")){
+
+        return;
+
+    }
+
+    google.script.run
+
+    .withSuccessHandler(function(){
+
+        loadMessages();
+
+    })
+
+    .deleteMessage(
+
+        messageId,
+
+        userId
+
+    );
+
+}
