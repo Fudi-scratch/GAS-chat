@@ -1,8 +1,10 @@
 const MESSAGE_SHEET = "Messages";
 const USER_SHEET = "Users";
 
+const SPREADSHEET_ID = "1W6agAfXTjNmWC1deWXP63e0bR-X6j11emdhRzzqkLlU";
+
 function getSpreadsheet() {
-  return SpreadsheetApp.getActiveSpreadsheet();
+  return SpreadsheetApp.openById(SPREADSHEET_ID);
 }
 
 function getSheet(name) {
