@@ -1,6 +1,6 @@
 // ===== Messages.gs =====
 
-function sendMessage(userId, message) {
+function sendMessage(userId, nickname, message) {
   message = String(message).trim();
 
   if (message.length === 0) {
