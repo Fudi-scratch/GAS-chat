@@ -1,0 +1,451 @@
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI","Yu Gothic UI",sans-serif;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    background:linear-gradient(135deg,#b7d8ff,#e6f2ff);
+    overflow:hidden;
+}
+
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+/* ---------- 全体 ---------- */
+
+#app{
+    width:100%;
+    max-width:900px;
+    height:95vh;
+
+    display:flex;
+    flex-direction:column;
+
+    background:rgba(255,255,255,.65);
+    backdrop-filter:blur(18px);
+
+    border-radius:28px;
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,.15);
+
+    overflow:hidden;
+}
+
+/* ---------- ヘッダー ---------- */
+
+header{
+
+    height:70px;
+
+    background:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 24px;
+
+    border-bottom:1px solid #eee;
+
+}
+
+.title{
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    color:#2b2b2b;
+
+}
+
+#changeNicknameButton{
+
+    border:none;
+
+    background:#5b9dff;
+
+    color:white;
+
+    padding:10px 18px;
+
+    border-radius:100px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+#changeNicknameButton:hover{
+
+    transform:scale(1.05);
+
+}
+
+/* ---------- メッセージ ---------- */
+
+#chatArea{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    background:#f8fbff;
+
+    padding:25px;
+
+}
+
+#messages{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+}
+
+/* ---------- 入力欄 ---------- */
+
+footer{
+
+    background:white;
+
+    padding:18px;
+
+    border-top:1px solid #eee;
+
+}
+
+.counter{
+
+    text-align:right;
+
+    color:#777;
+
+    font-size:14px;
+
+    margin-bottom:8px;
+
+}
+
+.inputArea{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+#messageInput{
+
+    flex:1;
+
+    resize:none;
+
+    border:none;
+
+    outline:none;
+
+    background:#edf4ff;
+
+    border-radius:18px;
+
+    padding:14px;
+
+    font-size:16px;
+
+    min-height:55px;
+
+}
+
+#sendButton{
+
+    width:110px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#4f90ff;
+
+    color:white;
+
+    font-size:17px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+#sendButton:hover{
+
+    transform:scale(1.05);
+
+}
+
+#sendButton:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+
+}
+
+/* ---------- 吹き出し ---------- */
+
+.message{
+
+    display:flex;
+
+    flex-direction:column;
+
+    max-width:70%;
+
+    animation:fade .2s;
+
+}
+
+.me{
+
+    margin-left:auto;
+
+}
+
+.other{
+
+    margin-right:auto;
+
+}
+
+.nickname{
+
+    font-size:13px;
+
+    color:#777;
+
+    margin-bottom:3px;
+
+}
+
+.bubble{
+
+    padding:14px 18px;
+
+    border-radius:20px;
+
+    word-break:break-word;
+
+}
+
+.me .bubble{
+
+    background:#4f90ff;
+
+    color:white;
+
+}
+
+.other .bubble{
+
+    background:white;
+
+    color:#222;
+
+}
+
+.deleted .bubble{
+
+    background:#ffe9e9;
+
+    color:#c44;
+
+    font-style:italic;
+
+}
+
+.time{
+
+    margin-top:4px;
+
+    font-size:12px;
+
+    color:#888;
+
+}
+
+.read{
+
+    margin-top:3px;
+
+    font-size:11px;
+
+    color:#5b9dff;
+
+}
+
+/* ---------- ニックネーム画面 ---------- */
+
+.modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:100;
+
+}
+
+.modalBox{
+
+    background:white;
+
+    width:360px;
+
+    border-radius:25px;
+
+    padding:30px;
+
+    text-align:center;
+
+}
+
+.modalBox h2{
+
+    margin-bottom:15px;
+
+}
+
+.modalBox p{
+
+    margin-bottom:15px;
+
+    color:#666;
+
+}
+
+.modalBox input{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:15px;
+
+    border:1px solid #ddd;
+
+    font-size:16px;
+
+    margin-bottom:15px;
+
+}
+
+.modalBox button{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    background:#4f90ff;
+
+    color:white;
+
+    border-radius:15px;
+
+    cursor:pointer;
+
+}
+
+/* ---------- スクロールバー ---------- */
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#c6d8ff;
+
+    border-radius:100px;
+
+}
+
+/* ---------- アニメーション ---------- */
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(8px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ---------- スマホ ---------- */
+
+@media(max-width:700px){
+
+    body{
+
+        padding:0;
+
+    }
+
+    #app{
+
+        width:100%;
+
+        height:100vh;
+
+        border-radius:0;
+
+    }
+
+    .message{
+
+        max-width:85%;
+
+    }
+
+}
+
+</style>
