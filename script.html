@@ -247,17 +247,33 @@ function loadMessages(scrollBottom=false){
 
 function drawMessages(messages){
 
-    const area = document.getElementById("messages");
+    const area=document.getElementById("messages");
 
-    area.innerHTML = "";
+    const oldHeight=area.scrollHeight;
+    const oldTop=document.getElementById("chatArea").scrollTop;
 
-    messages.forEach(msg => {
+    area.innerHTML="";
 
-        const box = document.createElement("div");
+    messages.forEach(msg=>{
 
-        box.className = "message";
+        // --------------------
+        // 自動既読
+        // --------------------
 
-        if(msg.userId === userId){
+        if(msg.userId!==userId){
+
+            google.script.run.markAsRead(
+                msg.messageId,
+                userId
+            );
+
+        }
+
+        const box=document.createElement("div");
+
+        box.className="message";
+
+        if(msg.userId===userId){
 
             box.classList.add("me");
 
@@ -267,25 +283,73 @@ function drawMessages(messages){
 
         }
 
-        let menu = "";
+        let menu="";
 
-        if(msg.userId === userId){
+        if(msg.userId===userId){
 
-            menu = `
-                <div class="messageMenu">
-                    <button onclick="editMessage('${msg.messageId}')">
-                        ✏️
-                    </button>
+            menu=`
 
-                    <button onclick="deleteMessage('${msg.messageId}')">
-                        🗑️
-                    </button>
-                </div>
-            `;
+<div class="messageMenu">
+
+<button onclick="editMessage('${msg.messageId}')">
+
+✏️
+
+</button>
+
+<button onclick="deleteMessage('${msg.messageId}')">
+
+🗑️
+
+</button>
+
+</div>
+
+`;
 
         }
 
-        box.innerHTML = `
+        // --------------------
+        // 既読
+        // --------------------
+
+        let readHTML="";
+
+        if(msg.readUsers){
+
+            const list=msg.readUsers.split(",");
+
+            const names=[];
+
+            list.forEach(v=>{
+
+                const data=v.split(":");
+
+                if(data.length>=2){
+
+                    names.push(data[1]);
+
+                }
+
+            });
+
+            if(names.length){
+
+                readHTML=`
+
+<div class="read">
+
+👀 ${names.join("、")}
+
+</div>
+
+`;
+
+            }
+
+        }
+
+        box.innerHTML=`
 
 <div class="nickname">
 
@@ -307,11 +371,26 @@ ${formatTime(msg.time)}
 
 </div>
 
+${readHTML}
+
 `;
 
         area.appendChild(box);
 
     });
+
+    // スクロール位置維持
+    const chat=document.getElementById("chatArea");
+
+    if(chat.scrollTop+chat.clientHeight>=oldHeight-20){
+
+        chat.scrollTop=chat.scrollHeight;
+
+    }else{
+
+        chat.scrollTop=oldTop;
+
+    }
 
 }
 // ---------------------
