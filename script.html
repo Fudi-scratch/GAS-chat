@@ -146,3 +146,203 @@ messageInput.addEventListener("keydown", e => {
 });
 
 </script>
+<script>
+
+// ===================================
+// Part2
+// メッセージ送信・取得
+// ===================================
+
+let isSending = false;
+
+// ---------------------
+// 送信
+// ---------------------
+
+function sendMessage(){
+
+    if(isSending) return;
+
+    const text = messageInput.value.trim();
+
+    if(text==="") return;
+
+    if(text.length>100){
+
+        alert("100文字までです");
+
+        return;
+
+    }
+
+    isSending=true;
+
+    sendButton.disabled=true;
+
+    sendButton.textContent="送信中...";
+
+    google.script.run
+
+    .withSuccessHandler(function(){
+
+        messageInput.value="";
+
+        updateCounter();
+
+        sendButton.disabled=false;
+
+        sendButton.textContent="送信";
+
+        isSending=false;
+
+        loadMessages(true);
+
+    })
+
+    .withFailureHandler(function(err){
+
+        alert(err.message);
+
+        sendButton.disabled=false;
+
+        sendButton.textContent="送信";
+
+        isSending=false;
+
+    })
+
+    .sendMessage(userId,nickname,text);
+
+}
+
+// ---------------------
+// メッセージ取得
+// ---------------------
+
+function loadMessages(scrollBottom=false){
+
+    google.script.run
+
+    .withSuccessHandler(function(messages){
+
+        drawMessages(messages);
+
+        if(scrollBottom){
+
+            const chat=document.getElementById("chatArea");
+
+            chat.scrollTop=chat.scrollHeight;
+
+        }
+
+    })
+
+    .getMessages();
+
+}
+
+// ---------------------
+// メッセージ表示
+// ---------------------
+
+function drawMessages(messages){
+
+    const area=document.getElementById("messages");
+
+    area.innerHTML="";
+
+    messages.forEach(msg=>{
+
+        const box=document.createElement("div");
+
+        box.className="message";
+
+        if(msg.userId===userId){
+
+            box.classList.add("me");
+
+        }else{
+
+            box.classList.add("other");
+
+        }
+
+        box.innerHTML=`
+
+<div class="nickname">${escapeHtml(msg.nickname)}</div>
+
+<div class="bubble">
+
+${escapeHtml(msg.message)}
+
+</div>
+
+<div class="time">
+
+${formatTime(msg.time)}
+
+</div>
+
+`;
+
+        area.appendChild(box);
+
+    });
+
+}
+
+// ---------------------
+// HTMLエスケープ
+// ---------------------
+
+function escapeHtml(text){
+
+    return String(text)
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#039;");
+
+}
+
+// ---------------------
+// 時刻表示
+// ---------------------
+
+function formatTime(date){
+
+    const d=new Date(date);
+
+    return d.toLocaleTimeString("ja-JP",{
+
+        hour:"2-digit",
+
+        minute:"2-digit"
+
+    });
+
+}
+
+// ---------------------
+// 1秒更新
+// ---------------------
+
+setInterval(function(){
+
+    loadMessages();
+
+},1000);
+
+// ---------------------
+// 最初の読み込み
+// ---------------------
+
+loadMessages(true);
+
+</script>
