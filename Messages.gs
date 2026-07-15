@@ -122,34 +122,49 @@ function deleteMessage(messageId, userId) {
 
 function markAsRead(messageId, userId) {
 
+  const nickname = getNickname(userId);
+
   const sheet = getSheet(MESSAGE_SHEET);
   const values = sheet.getDataRange().getValues();
 
   for (let i = 1; i < values.length; i++) {
 
-    if (values[i][0] === messageId) {
+    if (values[i][0] !== messageId) continue;
 
-      let readUsers = String(values[i][5]).trim();
+    let readUsers = String(values[i][5]).trim();
 
-      let list = [];
+    let list = [];
 
-      if (readUsers !== "") {
+    if (readUsers !== "") {
 
-        list = readUsers.split(",");
-
-      }
-
-      if (!list.includes(userId)) {
-
-        list.push(userId);
-
-        sheet.getRange(i + 1, 6).setValue(list.join(","));
-
-      }
-
-      return "OK";
+      list = readUsers.split(",");
 
     }
+
+    const data = userId + ":" + nickname;
+
+    let exists = false;
+
+    for (let item of list) {
+
+      if (item.startsWith(userId + ":")) {
+
+        exists = true;
+        break;
+
+      }
+
+    }
+
+    if (!exists) {
+
+      list.push(data);
+
+      sheet.getRange(i + 1, 6).setValue(list.join(","));
+
+    }
+
+    return "OK";
 
   }
 
