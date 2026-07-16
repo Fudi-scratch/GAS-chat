@@ -93,16 +93,29 @@ function saveNickname() {
 
     }
 
-    nickname = name;
+    google.script.run
 
-    localStorage.setItem("nickname", nickname);
+    .withSuccessHandler(function(){
 
-    google.script.run.setNickname(userId, nickname);
+        nickname = name;
 
-    nicknameModal.style.display = "none";
+        localStorage.setItem("nickname", nickname);
+
+        nicknameModal.style.display = "none";
+
+        loadMessages(true);
+
+    })
+
+    .withFailureHandler(function(err){
+
+        alert("エラー: " + err.message);
+
+    })
+
+    .saveUser(userId, name);
 
 }
-
 saveNicknameButton.onclick = saveNickname;
 
 // ------------------------------
