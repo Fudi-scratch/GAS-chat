@@ -1,6 +1,7 @@
 // ===== Messages.gs =====
 
 function sendMessage(userId, message) {
+
   message = String(message).trim();
 
   if (message.length === 0) {
@@ -11,7 +12,7 @@ function sendMessage(userId, message) {
     throw new Error("100文字までです。");
   }
 
-  const nickname = getnickname(userId);
+  const nickname = getNickname(userId);
 
   if (nickname === "") {
     throw new Error("ニックネームが登録されていません。");
@@ -20,15 +21,13 @@ function sendMessage(userId, message) {
   const sheet = getSheet(MESSAGE_SHEET);
 
   sheet.appendRow([
-    generateId(8),               // MessageID
-    userId,                      // UserID
-    nickname,                    // Nickname
-    new Date(),                  // Time
-    message,                     // Message
-    ""                           // ReadUsers
+    generateId(8),
+    userId,
+    nickname,
+    new Date(),
+    message,
+    ""
   ]);
-
-  return "OK";
 }
 
 function getMessages() {
