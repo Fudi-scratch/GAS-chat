@@ -18,7 +18,7 @@ function getSheet(name) {
       sheet.appendRow([
         "MessageID",
         "UserID",
-        "Nickname",
+        "nickname",
         "Time",
         "Message",
         "ReadUsers"
@@ -28,7 +28,7 @@ function getSheet(name) {
     if (name === USER_SHEET) {
       sheet.appendRow([
         "UserID",
-        "Nickname"
+        "nickname"
       ]);
     }
   }
