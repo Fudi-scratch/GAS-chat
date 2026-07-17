@@ -12,7 +12,7 @@ function sendMessage(userId, message) {
     throw new Error("100文字までです。");
   }
 
-  const nickname = getNickname(userId);
+  const nickname = getnickname(userId);
 
   if (nickname === "") {
     throw new Error("ニックネームが登録されていません。");
