@@ -121,7 +121,7 @@ function deleteMessage(messageId, userId) {
 
 function markAsRead(messageId, userId) {
 
-  const nickname = getNickname(userId);
+  const nickname = getnickname(userId);
 
   const sheet = getSheet(MESSAGE_SHEET);
   const values = sheet.getDataRange().getValues();
