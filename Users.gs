@@ -40,7 +40,7 @@ function saveUser(userId, nickname) {
   sheet.appendRow([userId, nickname]);
 }
 
-function getNickname(userId) {
+function getnickname(userId) {
   const user = getUser(userId);
 
   if (user) {
