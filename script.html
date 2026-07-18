@@ -1,33 +1,48 @@
 <script>
 
 // ===============================
-// GAS Chat Script Part 1
+// GAS Chat Script Part1
+// 初期化・ニックネーム
 // ===============================
 
 let userId = "";
 let nickname = "";
 
+let isSending = false;
+
+// ------------------------------
+// 要素取得
+// ------------------------------
+
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
+
 const nicknameModal = document.getElementById("nicknameModal");
 const nicknameInput = document.getElementById("nicknameInput");
-const savenicknameButton = document.getElementById("savenicknameButton");
-const changenicknameButton = document.getElementById("changenicknameButton");
+
+const saveNicknameButton = document.getElementById("savenicknameButton");
+const changeNicknameButton = document.getElementById("changenicknameButton");
+
 const charCount = document.getElementById("charCount");
 
 // ------------------------------
 // ランダムID生成
 // ------------------------------
 
-function generateId(length = 6) {
+function generateId(length = 6){
 
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const chars =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
     let id = "";
 
-    for (let i = 0; i < length; i++) {
+    for(let i=0;i<length;i++){
 
-        id += chars[Math.floor(Math.random() * chars.length)];
+        id += chars[
+            Math.floor(
+                Math.random()*chars.length
+            )
+        ];
 
     }
 
@@ -36,30 +51,36 @@ function generateId(length = 6) {
 }
 
 // ------------------------------
-// 初期設定
+// 初期化
 // ------------------------------
 
-function initialize() {
+function initialize(){
 
     userId = localStorage.getItem("userId");
 
-    if (!userId) {
+    if(!userId){
 
         userId = generateId();
 
-        localStorage.setItem("userId", userId);
+        localStorage.setItem(
+            "userId",
+            userId
+        );
 
     }
 
-    nickname = localStorage.getItem("nickname");
+    nickname =
+    localStorage.getItem("nickname") || "";
 
-    if (!nickname) {
+    if(nickname===""){
 
-        nicknameModal.style.display = "flex";
+        nicknameModal.style.display="flex";
 
-    } else {
+    }else{
 
-        nicknameModal.style.display = "none";
+        nicknameModal.style.display="none";
+
+        nicknameInput.value = nickname;
 
     }
 
@@ -73,11 +94,12 @@ initialize();
 // ニックネーム保存
 // ------------------------------
 
-function savenickname() {
+function saveNickname(){
 
-    const name = nicknameInput.value.trim();
+    const name =
+    nicknameInput.value.trim();
 
-    if (name.length === 0) {
+    if(name===""){
 
         alert("ニックネームを入力してください");
 
@@ -85,7 +107,7 @@ function savenickname() {
 
     }
 
-    if (name.length > 20) {
+    if(name.length>20){
 
         alert("20文字以内です");
 
@@ -93,15 +115,24 @@ function savenickname() {
 
     }
 
+    saveNicknameButton.disabled = true;
+    saveNicknameButton.textContent = "保存中...";
+
     google.script.run
 
     .withSuccessHandler(function(){
 
         nickname = name;
 
-        localStorage.setItem("nickname", nickname);
+        localStorage.setItem(
+            "nickname",
+            nickname
+        );
 
-        nicknameModal.style.display = "none";
+        nicknameModal.style.display="none";
+
+        saveNicknameButton.disabled = false;
+        saveNicknameButton.textContent = "はじめる";
 
         loadMessages(true);
 
@@ -109,68 +140,88 @@ function savenickname() {
 
     .withFailureHandler(function(err){
 
-        alert("エラー: " + err.message);
+        alert(err.message);
+
+        saveNicknameButton.disabled = false;
+        saveNicknameButton.textContent = "はじめる";
 
     })
 
-    .saveUser(userId, name);
+    .saveUser(
+        userId,
+        name
+    );
 
 }
-savenicknameButton.onclick = savenickname;
 
 // ------------------------------
-// 名前変更
+// ボタン
 // ------------------------------
 
-changenicknameButton.onclick = () => {
+saveNicknameButton.onclick =
+saveNickname;
+
+changeNicknameButton.onclick =
+function(){
 
     nicknameInput.value = nickname;
 
-    nicknameModal.style.display = "flex";
+    nicknameModal.style.display =
+    "flex";
 
 };
 
 // ------------------------------
-// 100文字カウンター
+// 文字数
 // ------------------------------
 
-function updateCounter() {
+function updateCounter(){
 
-    charCount.textContent = messageInput.value.length;
+    charCount.textContent =
+    messageInput.value.length;
 
 }
 
-messageInput.addEventListener("input", updateCounter);
+messageInput.addEventListener(
+    "input",
+    updateCounter
+);
 
 // ------------------------------
 // Enter送信
 // ------------------------------
 
-messageInput.addEventListener("keydown", e => {
+messageInput.addEventListener(
+    "keydown",
+    function(e){
 
-    if (e.key === "Enter" && !e.shiftKey) {
+        if(
+            e.key==="Enter" &&
+            !e.shiftKey
+        ){
 
-        e.preventDefault();
+            e.preventDefault();
 
-        sendMessage();
+            sendMessage();
+
+        }
 
     }
+);
 
-});
-
+// ------------------------------
 // 送信ボタン
+// ------------------------------
+
 sendButton.onclick = sendMessage;
 
-});
-
-
+</script>
+<script>
 
 // ===================================
-// Part2
-// メッセージ送信・取得
+// Part2-1
+// メッセージ送信・取得・表示
 // ===================================
-
-let isSending = false;
 
 // ---------------------
 // 送信
@@ -192,25 +243,35 @@ function sendMessage(){
 
     }
 
-    isSending=true;
+    if(nickname===""){
 
-    sendButton.disabled=true;
+        alert("ニックネームを設定してください");
 
-    sendButton.textContent="送信中...";
+        nicknameModal.style.display="flex";
+
+        return;
+
+    }
+
+    isSending = true;
+
+    sendButton.disabled = true;
+
+    sendButton.textContent = "送信中...";
 
     google.script.run
 
     .withSuccessHandler(function(){
 
-        messageInput.value="";
+        messageInput.value = "";
 
         updateCounter();
 
-        sendButton.disabled=false;
+        sendButton.disabled = false;
 
-        sendButton.textContent="送信";
+        sendButton.textContent = "送信";
 
-        isSending=false;
+        isSending = false;
 
         loadMessages(true);
 
@@ -220,19 +281,23 @@ function sendMessage(){
 
         alert(err.message);
 
-        sendButton.disabled=false;
+        sendButton.disabled = false;
 
-        sendButton.textContent="送信";
+        sendButton.textContent = "送信";
 
-        isSending=false;
+        isSending = false;
 
     })
 
-.sendMessage(userId, text);
+    .sendMessage(
+        userId,
+        text
+    );
+
 }
 
 // ---------------------
-// メッセージ取得
+// 取得
 // ---------------------
 
 function loadMessages(scrollBottom=false){
@@ -245,11 +310,19 @@ function loadMessages(scrollBottom=false){
 
         if(scrollBottom){
 
-            const chat=document.getElementById("chatArea");
+            const chat =
+            document.getElementById("chatArea");
 
-            chat.scrollTop=chat.scrollHeight;
+            chat.scrollTop =
+            chat.scrollHeight;
 
         }
+
+    })
+
+    .withFailureHandler(function(err){
+
+        console.log(err);
 
     })
 
@@ -258,34 +331,43 @@ function loadMessages(scrollBottom=false){
 }
 
 // ---------------------
-// メッセージ表示
+// 表示
 // ---------------------
 
 function drawMessages(messages){
 
-    const area=document.getElementById("messages");
+    const area =
+    document.getElementById("messages");
 
-    const oldHeight=area.scrollHeight;
-    const oldTop=document.getElementById("chatArea").scrollTop;
+    const chat =
+    document.getElementById("chatArea");
+
+    const oldTop =
+    chat.scrollTop;
+
+    const oldHeight =
+    chat.scrollHeight;
 
     area.innerHTML="";
 
-    messages.forEach(msg=>{
+    messages.forEach(function(msg){
 
-        // --------------------
         // 自動既読
-        // --------------------
 
         if(msg.userId!==userId){
 
             google.script.run.markAsRead(
+
                 msg.messageId,
+
                 userId
+
             );
 
         }
 
-        const box=document.createElement("div");
+        const box =
+        document.createElement("div");
 
         box.className="message";
 
@@ -325,19 +407,22 @@ function drawMessages(messages){
 
         }
 
-        // --------------------
+        // ----------
+
         // 既読
-        // --------------------
+
+        // ----------
 
         let readHTML="";
 
         if(msg.readUsers){
 
-            const list=msg.readUsers.split(",");
+            const list =
+            String(msg.readUsers).split(",");
 
             const names=[];
 
-            list.forEach(v=>{
+            list.forEach(function(v){
 
                 const data=v.split(":");
 
@@ -355,7 +440,7 @@ function drawMessages(messages){
 
 <div class="read">
 
-👀 ${names.join("、")}
+👀 ${escapeHtml(names.join("、"))}
 
 </div>
 
@@ -395,21 +480,26 @@ ${readHTML}
 
     });
 
-    // スクロール位置維持
-    const chat=document.getElementById("chatArea");
+    // スクロール維持
 
-    if(chat.scrollTop+chat.clientHeight>=oldHeight-20){
+    if(
 
-        chat.scrollTop=chat.scrollHeight;
+        oldTop + chat.clientHeight
+
+        >= oldHeight - 20
+
+    ){
+
+        chat.scrollTop = chat.scrollHeight;
 
     }else{
 
-        chat.scrollTop=oldTop;
+        chat.scrollTop = oldTop;
 
     }
 
 }
-// ---------------------
+    // ---------------------
 // HTMLエスケープ
 // ---------------------
 
@@ -418,13 +508,9 @@ function escapeHtml(text){
     return String(text)
 
     .replace(/&/g,"&amp;")
-
     .replace(/</g,"&lt;")
-
     .replace(/>/g,"&gt;")
-
     .replace(/"/g,"&quot;")
-
     .replace(/'/g,"&#039;");
 
 }
@@ -435,34 +521,16 @@ function escapeHtml(text){
 
 function formatTime(date){
 
-    const d=new Date(date);
+    const d = new Date(date);
 
     return d.toLocaleTimeString("ja-JP",{
 
         hour:"2-digit",
-
         minute:"2-digit"
 
     });
 
 }
-
-// ---------------------
-// 1秒更新
-// ---------------------
-
-setInterval(function(){
-
-    loadMessages();
-
-},1000);
-
-// ---------------------
-// 最初の読み込み
-// ---------------------
-
-loadMessages(true);
-
 
 // =======================
 // 編集
@@ -472,11 +540,19 @@ function editMessage(messageId){
 
     const text = prompt("新しいメッセージを入力してください");
 
-    if(text === null) return;
+    if(text===null) return;
 
-    if(text.trim() === "") return;
+    const newText = text.trim();
 
-    if(text.length > 100){
+    if(newText===""){
+
+        alert("メッセージを入力してください");
+
+        return;
+
+    }
+
+    if(newText.length>100){
 
         alert("100文字までです");
 
@@ -492,17 +568,24 @@ function editMessage(messageId){
 
     })
 
+    .withFailureHandler(function(err){
+
+        alert(err.message);
+
+    })
+
     .editMessage(
 
         messageId,
 
         userId,
 
-        text
+        newText
 
     );
 
 }
+
 // =======================
 // 削除
 // =======================
@@ -523,6 +606,12 @@ function deleteMessage(messageId){
 
     })
 
+    .withFailureHandler(function(err){
+
+        alert(err.message);
+
+    })
+
     .deleteMessage(
 
         messageId,
@@ -532,5 +621,25 @@ function deleteMessage(messageId){
     );
 
 }
+
+// ---------------------
+// 自動更新
+// ---------------------
+
+setInterval(function(){
+
+    loadMessages();
+
+},1000);
+
+// ---------------------
+// 初回読み込み
+// ---------------------
+
+window.addEventListener("load",function(){
+
+    loadMessages(true);
+
+});
 
 </script>
